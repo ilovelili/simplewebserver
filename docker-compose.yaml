@@ -1,0 +1,10 @@
+version: "3"
+services:  
+  server:
+    build:
+      context: .
+      dockerfile: DockerFile
+    image: ilovelili/simple-web-server
+    restart: always    
+    ports:
+      - "8080:8080"

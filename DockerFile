@@ -1,0 +1,20 @@
+FROM golang as builder
+LABEL maintainer="min ju<route666@live.cn>"
+
+ENV SRC_DIR=/go/src/github.com/ilovelili/simplewebserver
+WORKDIR $SRC_DIR
+COPY ./simplewebserver .
+# go dep
+RUN go get -u github.com/golang/dep/cmd/dep
+RUN dep init
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server .
+
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+ENV SRC_DIR=/go/src/github.com/ilovelili/simplewebserver
+WORKDIR /root/
+COPY --from=builder $SRC_DIR/server .
+
+# Expose the port the app runs in
+EXPOSE 8080
+ENTRYPOINT ["./server"]
